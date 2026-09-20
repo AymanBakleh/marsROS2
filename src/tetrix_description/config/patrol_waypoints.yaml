@@ -1,0 +1,12 @@
+patrol_manager:
+  ros__parameters:
+    loop_hz: 10.0
+    goal_tolerance: 0.25
+    max_speed_xy: 0.50
+    max_speed_yaw: 1.20
+    k_xy: 0.9
+    k_yaw: 1.6
+    fire_hold_seconds: 2.0
+    # Flat list [x1, y1, x2, y2, ...] because ROS2 params do not
+    # reliably accept nested sequences in all parsers.
+    waypoints_flat: [0.0, 0.0, 2.5, 2.0, 2.5, -2.0, 0.0, -3.0, -2.5, -2.0, -2.5, 2.0, 0.0, 3.0]

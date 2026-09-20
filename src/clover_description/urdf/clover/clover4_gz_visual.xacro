@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<robot name="clover" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:property name="body_width" value="0.35" />
+  <xacro:property name="body_height" value="0.124" />
+  <xacro:property name="mass" value="1.5" />
+  <xacro:property name="mass_rotor" value="0.01" />
+  <xacro:property name="arm_length_front_x" value="0.083" />
+  <xacro:property name="arm_length_back_x" value="0.083" />
+  <xacro:property name="arm_length_front_y" value="0.083" />
+  <xacro:property name="arm_length_back_y" value="0.083" />
+  <xacro:property name="rotor_offset_top" value="0.026" />
+  <xacro:property name="radius_rotor" value="0.06" />
+
+  <link name="base_link">
+    <inertial>
+      <mass value="${mass}" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <inertia
+        ixx="${1 / 12 * mass * (body_width * body_width + body_height * body_height)}"
+        ixy="0.0"
+        ixz="0.0"
+        iyy="${1 / 12 * mass * (body_width * body_width + body_height * body_height)}"
+        iyz="0.0"
+        izz="${1 / 12 * mass * (body_width * body_width + body_width * body_width)}"
+      />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.025" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://clover_description/meshes/clover4/clover_body_solid.dae" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="${body_width} ${body_width} ${body_height}" />
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="base_guard_link">
+    <inertial>
+      <mass value="0.015" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <inertia ixx="1e-5" ixy="0.0" ixz="0.0" iyy="1e-5" iyz="0.0" izz="1e-5" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.025" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://clover_description/meshes/clover4/clover_guards_transparent.dae" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.01 0.01 0.01" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="base_guard_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="base_guard_link" />
+  </joint>
+
+  <xacro:macro name="simple_rotor" params="name mesh x y z">
+    <link name="${name}">
+      <inertial>
+        <mass value="${mass_rotor}" />
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <inertia ixx="1e-6" ixy="0.0" ixz="0.0" iyy="1e-6" iyz="0.0" izz="1e-6" />
+      </inertial>
+      <visual>
+        <geometry>
+          <mesh filename="package://clover_description/meshes/${mesh}" />
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <cylinder length="0.005" radius="${radius_rotor}" />
+        </geometry>
+      </collision>
+    </link>
+    <joint name="${name}_joint" type="fixed">
+      <origin xyz="${x} ${y} ${z}" rpy="0 0 0" />
+      <parent link="base_link" />
+      <child link="${name}" />
+    </joint>
+  </xacro:macro>
+
+  <xacro:simple_rotor name="rotor_0" mesh="clover4/prop_ccw.dae" x="${arm_length_front_x}" y="-${arm_length_front_y}" z="${rotor_offset_top}" />
+  <xacro:simple_rotor name="rotor_1" mesh="clover4/prop_ccw.dae" x="-${arm_length_back_x}" y="${arm_length_back_y}" z="${rotor_offset_top}" />
+  <xacro:simple_rotor name="rotor_2" mesh="clover4/prop_cw.dae" x="${arm_length_front_x}" y="${arm_length_front_y}" z="${rotor_offset_top}" />
+  <xacro:simple_rotor name="rotor_3" mesh="clover4/prop_cw.dae" x="-${arm_length_back_x}" y="-${arm_length_back_y}" z="${rotor_offset_top}" />
+</robot>
